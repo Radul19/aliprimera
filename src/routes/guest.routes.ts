@@ -19,6 +19,10 @@ router.post('/createNews', guest.createNews)
 router.post('/updateNews', guest.updateNews)
 router.post('/delNews', guest.delNews)
 
+router.get('/plusChart', guest.plusChart)
+router.get('/createChart', guest.createChart)
+router.get('/getChart', guest.getChart)
+
 
 
 

@@ -3,6 +3,7 @@ import path from "path";
 import ImageSch from "../models/ImageSch";
 import { deleteImage, uploadImage } from "../helpers/uploadImages";
 import NewSch from "../models/NewSch";
+import ChartSch from "../models/ChartSch";
 const debug = true;
 
 const indexPath = path.resolve(__dirname, "../app", "index.html");
@@ -15,9 +16,11 @@ export const test: RequestHandler = async (req, res) => {
 export const loadAll: RequestHandler = async (req, res) => {
   if (debug) console.log("#loadAll");
   try {
+    
+    await ChartSch.findOneAndUpdate({ _id: "6682def3e5b948a57d5e16cc" }, { $inc: { amount: 1 } });
     const gallery = await ImageSch.find();
     const news = await NewSch.find();
-    res.send({ gallery,news });
+    res.send({ gallery, news });
   } catch (error: any) {
     res.status(400).json({ msg: error.message });
   }
@@ -70,17 +73,16 @@ export const delImage: RequestHandler = async (req, res) => {
   }
 };
 
-
 export const createNews: RequestHandler = async (req, res) => {
   if (debug) console.log("#createNews");
   try {
-    const { secure_url: su, public_id: pi,link,title } = req.body;
+    const { secure_url: su, public_id: pi, link, title } = req.body;
     const { secure_url, public_id } = await uploadImage({
       secure_url: su,
       public_id: pi,
     });
 
-    await NewSch.create({ secure_url, public_id,link,title });
+    await NewSch.create({ secure_url, public_id, link, title });
     const result = await NewSch.find();
     res.send(result);
   } catch (error: any) {
@@ -91,14 +93,17 @@ export const createNews: RequestHandler = async (req, res) => {
 export const updateNews: RequestHandler = async (req, res) => {
   if (debug) console.log("#updateNews");
   try {
-    const { secure_url: su, public_id: pi, _id,title,link } = req.body;
+    const { secure_url: su, public_id: pi, _id, title, link } = req.body;
     if (!_id) return res.status(400).json({ msg: "Noticia no encontrada" });
     const { secure_url, public_id } = await uploadImage({
       secure_url: su,
       public_id: pi,
     });
 
-    await NewSch.findOneAndUpdate({ _id }, { secure_url, public_id,title,link });
+    await NewSch.findOneAndUpdate(
+      { _id },
+      { secure_url, public_id, title, link }
+    );
     const result = await NewSch.find();
     res.send(result);
   } catch (error: any) {
@@ -119,7 +124,33 @@ export const delNews: RequestHandler = async (req, res) => {
     res.status(400).json({ msg: error.message });
   }
 };
-
+export const createChart: RequestHandler = async (req, res) => {
+  if (debug) console.log("#createChart");
+  try {
+    await ChartSch.create({ amount: 0 });
+    res.send(true);
+  } catch (error: any) {
+    res.status(400).json({ msg: error.message });
+  }
+};
+export const plusChart: RequestHandler = async (req, res) => {
+  if (debug) console.log("#plusChart");
+  try {
+    await ChartSch.findOneAndUpdate({ _id: "6682def3e5b948a57d5e16cc" }, { $inc: { amount: 1 } });
+    res.send(true);
+  } catch (error: any) {
+    res.status(400).json({ msg: error.message });
+  }
+};
+export const getChart: RequestHandler = async (req, res) => {
+  if (debug) console.log("#getChart");
+  try {
+    const result = await ChartSch.findById("6682def3e5b948a57d5e16cc");
+    res.send(result);
+  } catch (error: any) {
+    res.status(400).json({ msg: error.message });
+  }
+};
 
 // export const zzzzzzz: RequestHandler = async (req, res) => {
 //   if (debug) console.log("#test");
