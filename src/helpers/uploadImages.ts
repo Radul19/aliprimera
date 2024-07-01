@@ -1,4 +1,4 @@
-import cloudinary from 'cloudinary'
+import { v2 as cloudinary } from 'cloudinary'
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -8,41 +8,48 @@ dotenv.config()
 //   api_secret: process.env.API_SECRET,
 // });
 
-cloudinary.v2.config({
+cloudinary.config({
   cloud_name: 'dhp2q7rls',
   api_key: '789349674471955',
   api_secret: '14TuaNUiwJwED4bKS3hC-x4NwEA',
 });
 
 
-type Image = {
+export type Image = {
   secure_url: string,
   public_id: string
 }
 /** TODO, CHECK IMAGE HANDLER, IF IT IS OBJECT OR STRING FROM 'type Image' */
-type UpImage = (base64: string) => Promise<Image>
+type UpImage = (img: Image) => Promise<Image>
 type UpImages = (arrImages: Image[]) => Promise<Image[]>
 
-const regx = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+// const regx = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+const regx = /cloudinary/;
 
-export const uploadImage: UpImage = async (base64: string) => {
-  const { secure_url, public_id } = await cloudinary.v2.uploader.upload(base64, {})
-  return { secure_url, public_id }
+export const uploadImage: UpImage = async (img) => {
+  const isIt = regx.test(img.secure_url)
+  // if the secure_url is a base64, upload it, if it is a cloudinary url, just return normal values
+  if (isIt) return img
+  else {
+    const { secure_url, public_id } = await cloudinary.uploader.upload(img.secure_url, {})
+    if (img.public_id.length > 0) await deleteImage(img.public_id)
+    return { secure_url, public_id }
+  }
 }
 
 export const uploadImages: UpImages = async (arrImages) => {
-  const sendImg: UpImage = (base64) => {
+  const sendImg: UpImage = (img) => {
     return new Promise(async (res, rej) => {
-      res(await uploadImage(base64))
+      res(await uploadImage(img))
     })
   }
-  let images = await Promise.all(arrImages.map(img => sendImg(img.secure_url)))
+  let images = await Promise.all(arrImages.map(img => sendImg(img)))
 
   return images
 }
 
 export const deleteImage = async (public_id: string) => {
-  await cloudinary.v2.uploader.destroy(public_id)
+  await cloudinary.uploader.destroy(public_id)
   // .then(() => true).catch(() => false)
 }
 
