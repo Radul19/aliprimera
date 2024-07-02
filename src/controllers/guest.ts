@@ -12,7 +12,7 @@ import MarketSch from "../models/MarketSch";
 //@ts-ignore
 import bcrypt from "bcrypt";
 import UserSch from "../models/UserSch";
-const debug = true;
+const debug = false;
 
 const indexPath = path.resolve(__dirname, "../app", "index.html");
 // console.log(indexPath);
