@@ -12,6 +12,7 @@ import MarketSch from "../models/MarketSch";
 //@ts-ignore
 import bcrypt from "bcrypt";
 import UserSch from "../models/UserSch";
+import CardSch from "../models/CardSch";
 const debug = false;
 
 const indexPath = path.resolve(__dirname, "../app", "index.html");
@@ -389,6 +390,25 @@ export const updateReview: RequestHandler = async (req, res) => {
   }
 };
 
+export const addCard: RequestHandler = async (req, res) => {
+  if (debug) console.log("#addCard");
+  try {
+    const {name,text,email} = req.body
+    await CardSch.create({name,text,email}) 
+    res.send("ok");
+  } catch (error: any) {
+    res.status(400).json({ msg: error.message });
+  }
+};
+export const getCards: RequestHandler = async (req, res) => {
+  if (debug) console.log("#getCards");
+  try {
+    const results = await CardSch.find() 
+    res.send(results);
+  } catch (error: any) {
+    res.status(400).json({ msg: error.message });
+  }
+};
 // export const zzzzzzz: RequestHandler = async (req, res) => {
 //   if (debug) console.log("#test");
 //   try {

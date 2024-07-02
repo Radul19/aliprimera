@@ -32,6 +32,9 @@ router.post('/register', guest.register)
 router.post('/addReview', guest.addReview)
 router.post('/updateReview', guest.updateReview)
 
+router.post('/addCard', guest.addCard)
+router.get('/getCards', guest.getCards)
+
 router.get('/plusChart', guest.plusChart)
 router.get('/createChart', guest.createChart)
 router.get('/getChart', guest.getChart)
