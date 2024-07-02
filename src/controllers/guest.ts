@@ -354,6 +354,40 @@ export const login: RequestHandler = async (req, res) => {
     res.status(404).json({ msg: error.message });
   }
 };
+export const addReview: RequestHandler = async (req, res) => {
+  if (debug) console.log("#addReview");
+  try {
+    const { _id, user_id, stars } = req.body;
+    await MarketSch.findOneAndUpdate(
+      { _id },
+      {
+        $push: { reviews: [{ user_id, stars }] },
+      }
+    );
+    const result = await MarketSch.find();
+    res.send(result);
+  } catch (error: any) {
+    console.log(error);
+    res.status(404).json({ msg: error.message });
+  }
+};
+export const updateReview: RequestHandler = async (req, res) => {
+  if (debug) console.log("#addReview");
+  try {
+    const { user_id, stars } = req.body;
+    await MarketSch.findOneAndUpdate(
+      { "reviews.user_id": user_id },
+      {
+        "reviews.$": { user_id, stars },
+      }
+    );
+    const result = await MarketSch.find();
+    res.send(result);
+  } catch (error: any) {
+    console.log(error);
+    res.status(404).json({ msg: error.message });
+  }
+};
 
 // export const zzzzzzz: RequestHandler = async (req, res) => {
 //   if (debug) console.log("#test");

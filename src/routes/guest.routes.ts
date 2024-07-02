@@ -29,6 +29,9 @@ router.post('/deleteImageMarket', guest.deleteImageMarket)
 router.post('/login', guest.login)
 router.post('/register', guest.register)
 
+router.post('/addReview', guest.addReview)
+router.post('/updateReview', guest.updateReview)
+
 router.get('/plusChart', guest.plusChart)
 router.get('/createChart', guest.createChart)
 router.get('/getChart', guest.getChart)

@@ -17,6 +17,7 @@ const MarketSch = new Schema(
     map: { type: String },
     ws: { type: String },
     ig: { type: String },
+    reviews: {type:[{ user_id: String, stars: Number }],default:[]},
     gallery: [
       {
         secure_url: { type: String, required: true },
