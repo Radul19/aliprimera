@@ -14,10 +14,14 @@ const MarketSch = new Schema(
       secure_url: { type: String, required: true },
       public_id: { type: String, required: true },
     },
+    catalogue: {type:{
+      secure_url: { type: String },
+      public_id: { type: String },
+    },default:undefined},
     map: { type: String },
     ws: { type: String },
     ig: { type: String },
-    reviews: {type:[{ user_id: String, stars: Number }],default:[]},
+    reviews: { type: [{ user_id: String, stars: Number }], default: [] },
     gallery: [
       {
         secure_url: { type: String, required: true },

@@ -149,6 +149,7 @@ export const createMarket: RequestHandler = async (req, res) => {
       map,
       ws,
       ig,
+      catalogue: cat,
       category,
     } = req.body;
     const logo = await uploadImage({
@@ -159,6 +160,18 @@ export const createMarket: RequestHandler = async (req, res) => {
       secure_url: frontData.secure_url,
       public_id: frontData.public_id,
     });
+    let c_su = undefined;
+    let c_pi = undefined;
+    if (cat) {
+      const { secure_url, public_id } = await uploadImage({
+        secure_url: frontData.secure_url,
+        public_id: frontData.public_id,
+      });
+      c_su = secure_url;
+      c_pi = public_id;
+    }
+    const catalogue =
+      c_su && c_pi ? { secure_url: c_su, public_id: c_pi } : undefined;
 
     await MarketSch.create({
       name,
@@ -169,6 +182,7 @@ export const createMarket: RequestHandler = async (req, res) => {
       ws,
       ig,
       category,
+      catalogue,
     });
     const result = await MarketSch.find();
     res.send(result);
@@ -189,7 +203,9 @@ export const updateMarket: RequestHandler = async (req, res) => {
       ws,
       ig,
       category,
+      catalogue:cat,
     } = req.body;
+
     const logo = await uploadImage({
       secure_url: logoData.secure_url,
       public_id: logoData.public_id,
@@ -198,10 +214,24 @@ export const updateMarket: RequestHandler = async (req, res) => {
       secure_url: frontData.secure_url,
       public_id: frontData.public_id,
     });
-
+    let catalogue = {
+      secure_url: "",
+      public_id: "",
+    }
+    if(cat){
+      if(cat.secure_url.length <= 1 ){
+        await deleteImage(cat.public_id)
+      }else{
+        const cat2 = await uploadImage({
+          secure_url: cat.secure_url,
+          public_id: cat.public_id,
+        });
+        catalogue = cat2
+      }
+    }
     await MarketSch.findOneAndUpdate(
       { _id },
-      { name, description, logo, front, map, ws, ig, category }
+      { name, description, logo, front, map, ws, ig, category,catalogue }
     );
     const result = await MarketSch.find();
     res.send(result);
@@ -299,21 +329,22 @@ export const createChart: RequestHandler = async (req, res) => {
 export const plusChart: RequestHandler = async (req, res) => {
   if (debug) console.log("#plusChart");
   try {
-    const {email} = req.body
-    let d = new Date()
-    let today = ''+(d.getMonth()+1)+"-"+d.getDate()+"-"+d.getFullYear()
-    const chart = await ChartSch.findOne({date:today})
-    if(!chart){
+    const { email } = req.body;
+    let d = new Date();
+    let today =
+      "" + (d.getMonth() + 1) + "-" + d.getDate() + "-" + d.getFullYear();
+    const chart = await ChartSch.findOne({ date: today });
+    if (!chart) {
       await ChartSch.create({
-        date:today,
-        users:[email]
-      })
-    }else{
-      const found = chart.users.find(e=> e === email)
-      if(!found){
-        chart.users.push(email)
-        await chart.save()
-      } 
+        date: today,
+        users: [email],
+      });
+    } else {
+      const found = chart.users.find((e) => e === email);
+      if (!found) {
+        chart.users.push(email);
+        await chart.save();
+      }
     }
     res.send(true);
   } catch (error: any) {
@@ -405,8 +436,8 @@ export const updateReview: RequestHandler = async (req, res) => {
 export const addCard: RequestHandler = async (req, res) => {
   if (debug) console.log("#addCard");
   try {
-    const {name,text,email} = req.body
-    await CardSch.create({name,text,email}) 
+    const { name, text, email } = req.body;
+    await CardSch.create({ name, text, email });
     res.send("ok");
   } catch (error: any) {
     res.status(400).json({ msg: error.message });
@@ -415,7 +446,7 @@ export const addCard: RequestHandler = async (req, res) => {
 export const getCards: RequestHandler = async (req, res) => {
   if (debug) console.log("#getCards");
   try {
-    const results = await CardSch.find() 
+    const results = await CardSch.find();
     res.send(results);
   } catch (error: any) {
     res.status(400).json({ msg: error.message });
