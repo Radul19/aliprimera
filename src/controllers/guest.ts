@@ -299,10 +299,22 @@ export const createChart: RequestHandler = async (req, res) => {
 export const plusChart: RequestHandler = async (req, res) => {
   if (debug) console.log("#plusChart");
   try {
-    await ChartSch.findOneAndUpdate(
-      { _id: "6682def3e5b948a57d5e16cc" },
-      { $inc: { amount: 1 } }
-    );
+    const {email} = req.body
+    let d = new Date()
+    let today = ''+(d.getMonth()+1)+"-"+d.getDate()+"-"+d.getFullYear()
+    const chart = await ChartSch.findOne({date:today})
+    if(!chart){
+      await ChartSch.create({
+        date:today,
+        users:[email]
+      })
+    }else{
+      const found = chart.users.find(e=> e === email)
+      if(!found){
+        chart.users.push(email)
+        await chart.save()
+      } 
+    }
     res.send(true);
   } catch (error: any) {
     res.status(400).json({ msg: error.message });
@@ -311,7 +323,7 @@ export const plusChart: RequestHandler = async (req, res) => {
 export const getChart: RequestHandler = async (req, res) => {
   if (debug) console.log("#getChart");
   try {
-    const result = await ChartSch.findById("6682def3e5b948a57d5e16cc");
+    const result = await ChartSch.find();
     res.send(result);
   } catch (error: any) {
     res.status(400).json({ msg: error.message });

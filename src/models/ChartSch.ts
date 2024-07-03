@@ -3,7 +3,8 @@ const objId = SchemaTypes.ObjectId;
 
 const ChartSch = new Schema(
   {
-    amount: { type: Number, required: true },
+    date: { type:String, required: true },
+    users: { type:[String], required: true },
   },
 );
 

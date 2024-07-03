@@ -35,7 +35,7 @@ router.post('/updateReview', guest.updateReview)
 router.post('/addCard', guest.addCard)
 router.get('/getCards', guest.getCards)
 
-router.get('/plusChart', guest.plusChart)
+router.post('/plusChart', guest.plusChart)
 router.get('/createChart', guest.createChart)
 router.get('/getChart', guest.getChart)
 
