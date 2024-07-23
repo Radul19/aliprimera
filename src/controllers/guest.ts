@@ -452,6 +452,18 @@ export const getCards: RequestHandler = async (req, res) => {
     res.status(400).json({ msg: error.message });
   }
 };
+export const deleteCard: RequestHandler = async (req, res) => {
+  if (debug) console.log("#deleteCard");
+  try {
+    const {_id} = req.body
+    const results = await CardSch.deleteOne({_id});
+    if(results){
+      res.send("ok");
+    } else res.status(400).json({ msg: 'No se pudo realizar la operacion, reseña no encontrada.' });
+  } catch (error: any) {
+    res.status(400).json({ msg: error.message });
+  }
+};
 // export const zzzzzzz: RequestHandler = async (req, res) => {
 //   if (debug) console.log("#test");
 //   try {

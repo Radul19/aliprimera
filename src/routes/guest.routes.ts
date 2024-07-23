@@ -39,6 +39,8 @@ router.post('/plusChart', guest.plusChart)
 router.get('/createChart', guest.createChart)
 router.get('/getChart', guest.getChart)
 
+router.post('/deleteCard', guest.deleteCard)
+
 
 
 
